@@ -434,7 +434,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
     <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
   </div>
-  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v2.5</div>
+  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v2.6</div>
 </div>
 
 <!-- ══ SKAN ══════════════════════════════════════════════════ -->
@@ -1111,10 +1111,18 @@ Zawsze zwracaj kompletny JSON.`;
     if(!resp.ok) throw new Error('HTTP ' + resp.status);
     const data = await resp.json();
     const raw = data.candidates[0].content.parts[0].text.trim();
-    console.log('Gemini:', raw);
+    console.log('Gemini raw:', raw);
 
-    const m = raw.match(/\{[\s\S]*\}/);
-    if(!m) throw new Error('Brak JSON');
+    // Wyciągnij JSON - obsłuż markdown ```json``` i zwykły JSON
+    let jsonStr = raw;
+    // Usuń markdown code blocks
+    jsonStr = jsonStr.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
+    // Znajdź obiekt JSON
+    const m = jsonStr.match(/\{[\s\S]*\}/);
+    if(!m) {
+      console.error('Brak JSON w:', raw.substring(0,300));
+      throw new Error('Brak JSON — odpowiedź: ' + raw.substring(0,80));
+    }
     const parsed = JSON.parse(m[0]);
 
     fillScanForm(parsed);
