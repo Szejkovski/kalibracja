@@ -1007,7 +1007,7 @@ function notify(msg){
 // GEMINI API KEY
 // ═══════════════════════════════════════════════════════════
 const GEMINI_KEY = 'AIzaSyCaFDGoGd2_1MGTnCGNRJGlhdIgua5C3RM';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
 
 // ═══════════════════════════════════════════════════════════
 // SKAN
@@ -1059,21 +1059,23 @@ korekta: liczba mm z dopisku giętarza, null jeśli brak.
 Zawsze zwracaj kompletny JSON.`;
 
   try {
-    const parts = [{ text: prompt }];
-
-    // Dodaj plik
-    parts.push({
-      inlineData: {
-        mimeType: scanFile.type === 'application/pdf' ? 'application/pdf' : scanFile.type,
-        data: scanFile.b64
-      }
-    });
+    // Gemini wymaga: najpierw obraz, potem tekst
+    const mt = scanFile.type || 'image/jpeg';
+    const parts = [
+      {
+        inlineData: {
+          mimeType: mt,
+          data: scanFile.b64
+        }
+      },
+      { text: prompt }
+    ];
 
     const resp = await fetch(GEMINI_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts }],
+        contents: [{ role: 'user', parts }],
         generationConfig: { temperature: 0.1, maxOutputTokens: 800 }
       })
     });
