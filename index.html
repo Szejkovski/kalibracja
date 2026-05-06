@@ -1029,7 +1029,7 @@ function getApiKey(){
 function setApiKey(k){
   localStorage.setItem('gemini_api_key', k.trim());
 }
-function getGeminiUrl(){ return `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${getApiKey()}`; }
+function getGeminiUrl(){ return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${getApiKey()}`; }
 
 // ═══════════════════════════════════════════════════════════
 // SKAN
