@@ -310,6 +310,104 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
+
+/* ══ SKAN ══ */
+.scan-layout{display:grid;grid-template-columns:420px 1fr;height:calc(100vh - 52px);overflow:hidden}
+.scan-left{background:var(--bg2);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column}
+.scan-right{overflow-y:auto;padding:28px 32px}
+
+.drop-zone{
+  border:1.5px dashed var(--line2);border-radius:12px;
+  padding:40px 20px;text-align:center;cursor:pointer;
+  position:relative;transition:.2s;background:var(--bg3);margin:16px;
+}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--red);background:var(--red-bg)}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz-title{font-size:13px;font-weight:600;margin-bottom:6px}
+.dz-sub{font-size:11px;color:var(--text2);line-height:1.6}
+.dz-sub em{color:var(--red);font-style:normal}
+
+.prev-bar{
+  display:flex;align-items:center;gap:8px;padding:8px 14px;
+  background:var(--bg3);margin:0 16px 10px;border-radius:8px;
+  font-family:var(--mono);font-size:11px;color:var(--text2);
+}
+#scan-img-preview{width:calc(100% - 32px);border-radius:8px;display:none;margin:0 16px 12px}
+
+.ai-bar{
+  margin:0 16px 12px;padding:10px 14px;background:var(--bg3);
+  border-radius:8px;display:flex;align-items:center;gap:8px;
+  font-size:11px;font-family:var(--mono);
+}
+.ai-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-pulse{background:var(--amber);animation:dp 1s infinite}
+.dot-ok{background:var(--green)}
+.dot-err{background:var(--red2)}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.2}}
+.blink span{animation:bl .9s infinite}
+.blink span:nth-child(2){animation-delay:.15s}
+.blink span:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,100%{opacity:.1}50%{opacity:1}}
+
+.scan-form{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+
+.field-hl .field-input{
+  border-color:var(--green)!important;
+  background:rgba(40,165,90,.08)!important;
+}
+
+.scan-result-card{
+  background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+  overflow:hidden;margin-bottom:16px;
+}
+.src-head{
+  padding:12px 18px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;
+}
+.src-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);font-family:var(--mono)}
+.src-body{padding:16px 18px}
+.ext-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.ext-item{background:var(--bg3);border-radius:8px;padding:10px 12px}
+.ext-lbl{font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.4px;color:var(--text3);margin-bottom:4px}
+.ext-val{font-size:17px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.ext-val .u{font-size:12px;font-weight:400;color:var(--text2);margin-left:2px}
+
+.verdict-box{
+  border-radius:10px;padding:18px;margin-bottom:12px;border:1px solid;
+}
+.verdict-box.plus{border-color:rgba(40,165,90,.25);background:rgba(40,165,90,.05)}
+.verdict-box.minus{border-color:rgba(214,59,31,.25);background:rgba(214,59,31,.05)}
+.verdict-box.zero{border-color:rgba(74,144,217,.25);background:rgba(74,144,217,.05)}
+
+.verd-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.verd-lbl{font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:6px}
+.verd-num{font-size:36px;font-weight:800;font-family:var(--mono);line-height:1}
+.verd-num.plus{color:var(--green)}
+.verd-num.minus{color:var(--red2)}
+.verd-num.zero{color:var(--blue)}
+.verd-laser{text-align:right}
+.verd-laser-num{font-size:24px;font-weight:700;font-family:var(--mono)}
+
+.verd-detail{font-size:11px;font-family:var(--mono);color:var(--text2);line-height:1.8;border-top:1px solid var(--line);padding-top:10px}
+.verd-detail strong{color:var(--text)}
+.verd-detail .hl{color:var(--green);font-weight:600}
+.verd-detail .hl.neg{color:var(--red2)}
+
+.instr-box{background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:2px solid var(--blue);margin-top:10px}
+.instr-title{font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:8px}
+.instr-step{font-size:11px;font-family:var(--mono);color:var(--text2);padding:4px 0;border-bottom:1px solid var(--line)}
+.instr-step:last-child{border-bottom:none}
+.instr-step .cmd{color:var(--blue);font-weight:600}
+.instr-step .val{color:var(--green);font-weight:600}
+
+.warn-box{background:rgba(224,144,32,.08);border:1px solid rgba(224,144,32,.2);border-radius:8px;padding:10px 14px;font-size:11px;font-family:var(--mono);color:var(--amber);margin-top:8px}
+
+.copy-btn{
+  height:30px;padding:0 12px;border:1px solid var(--line2);border-radius:6px;
+  background:none;cursor:pointer;font-size:11px;font-family:var(--mono);color:var(--text2);transition:.15s;
+}
+.copy-btn:hover{border-color:var(--green);color:var(--green)}
+
 </style>
 </head>
 <body>
@@ -323,11 +421,73 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <span style="color:var(--text3);font-weight:400">/ Rozwinięcie Blachy</span>
   </div>
   <div class="topbar-tabs">
+    <button class="tab-btn" onclick="switchTab('skan')">📷 Skanuj rysunek</button>
     <button class="tab-btn active" onclick="switchTab('kalk')">Kalkulator</button>
     <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
     <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
   </div>
   <div class="topbar-right">20MnCr5 / 16MnCr5 · t=5mm · v2.0</div>
+</div>
+
+<!-- ══ SKAN ══════════════════════════════════════════════════ -->
+<div id="tab-skan" class="section">
+  <div class="scan-layout">
+
+    <!-- LEWA -->
+    <div class="scan-left">
+      <div class="panel-head"><h2>Wgraj rysunek</h2></div>
+
+      <div class="drop-zone" id="scan-dz">
+        <input type="file" id="scan-fi" accept=".pdf,image/*" onchange="handleScanFile(this.files[0])">
+        <div style="font-size:32px;margin-bottom:12px">📄</div>
+        <div class="dz-title">Zdjęcie lub PDF rysunku</div>
+        <div class="dz-sub">Rysunek z dopiskiem giętarza<br><em>kliknij lub przeciągnij</em></div>
+      </div>
+
+      <div class="prev-bar hidden" id="scan-prev-bar">
+        <span id="scan-prev-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <button class="copy-btn" onclick="resetScan()">✕</button>
+      </div>
+      <img id="scan-img-preview">
+
+      <div class="ai-bar hidden" id="scan-ai-bar">
+        <div class="ai-dot dot-pulse" id="scan-ai-dot"></div>
+        <span id="scan-ai-txt">Analizuję rysunek <span class="blink"><span>.</span><span>.</span><span>.</span></span></span>
+      </div>
+
+      <div class="scan-form hidden" id="scan-form">
+        <div class="field-group"><div class="field-label">Nr detalu</div><input class="field-input" type="text" id="sf-nr"></div>
+        <div class="field-row">
+          <div class="field-group"><div class="field-label">Materiał</div>
+            <select class="field-input" id="sf-mat"><option>20MnCr5</option><option>16MnCr5</option><option>S355J2+N</option><option>S235JR</option></select>
+          </div>
+          <div class="field-group"><div class="field-label">Grubość t</div>
+            <select class="field-input" id="sf-t"><option value="5">5 mm</option><option value="4">4 mm</option><option value="3">3 mm</option><option value="6">6 mm</option><option value="8">8 mm</option></select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><div class="field-label">Promień R (mm)</div><input class="field-input" type="number" id="sf-r" step="0.5"></div>
+          <div class="field-group"><div class="field-label">Kąt α (°)</div><input class="field-input" type="number" id="sf-a" value="90"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><div class="field-label">X konstruktora (mm)</div><input class="field-input" type="number" id="sf-x" step="0.1"></div>
+          <div class="field-group"><div class="field-label">Korekta giętarza (mm)</div><input class="field-input red-input" type="number" id="sf-kor" step="0.1"></div>
+        </div>
+        <button class="calc-btn" onclick="runScanCalc()">OBLICZ KOREKTĘ →</button>
+        <button class="save-btn" onclick="saveScanEntry()" style="margin-top:6px">ZAPISZ DO BAZY</button>
+      </div>
+    </div>
+
+    <!-- PRAWA -->
+    <div class="scan-right">
+      <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--text3)" id="scan-empty">
+        <div style="font-size:48px">📋</div>
+        <p style="font-family:var(--mono);font-size:12px;text-align:center;line-height:1.8">Wgraj rysunek po lewej<br>AI odczyta dane i wyliczy korektę</p>
+      </div>
+      <div id="scan-result" style="display:none"></div>
+    </div>
+
+  </div>
 </div>
 
 <!-- ══ KALKULATOR ══════════════════════════════════════════ -->
@@ -826,7 +986,7 @@ function renderRef(){
 function switchTab(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    b.classList.toggle('active',['kalk','baza','tabela'][i]===name);
+    b.classList.toggle('active',['skan','kalk','baza','tabela'][i]===name);
   });
   document.getElementById('tab-'+name).classList.add('active');
   if(name==='baza') renderBaza();
@@ -841,6 +1001,277 @@ function notify(msg){
   el.textContent=msg; el.classList.add('show');
   setTimeout(()=>el.classList.remove('show'),2000);
 }
+
+
+// ═══════════════════════════════════════════════════════════
+// GEMINI API KEY
+// ═══════════════════════════════════════════════════════════
+const GEMINI_KEY = 'AIzaSyCaFDGoGd2_1MGTnCGNRJGlhdIgua5C3RM';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+
+// ═══════════════════════════════════════════════════════════
+// SKAN
+// ═══════════════════════════════════════════════════════════
+let scanFile = {b64:null, type:null, name:null};
+
+async function handleScanFile(file) {
+  if(!file) return;
+  scanFile.name = file.name;
+  scanFile.type = file.type;
+  scanFile.b64 = await toB64(file);
+
+  document.getElementById('scan-dz').classList.add('hidden');
+  document.getElementById('scan-prev-bar').classList.remove('hidden');
+  document.getElementById('scan-prev-name').textContent = file.name;
+
+  const img = document.getElementById('scan-img-preview');
+  img.src = 'data:' + file.type + ';base64,' + scanFile.b64;
+  img.style.display = 'block';
+
+  document.getElementById('scan-ai-bar').classList.remove('hidden');
+  await analyzeScan();
+}
+
+async function analyzeScan() {
+  const prompt = `Jesteś ekspertem od rysunków technicznych blach giętych w Techmatik S.A. Radom.
+Analizujesz rysunek technicznego z ewentualnym dopiskiem giętarza.
+
+STRUKTURA RYSUNKÓW TECHMATIK:
+- Ramka tytułowa (prawy dół): numer detalu (np. "250.383.101.01"), materiał (20MnCr5), masa
+- Sekcja "WZÓR PŁASKI" (prawy górny róg): wymiar X rozwinięcia — główny poziomy wymiar
+- Opis zagięć: "W DÓŁ 90° R10" lub "W GÓRĘ 90° R15" — kąt i promień R
+- DOPISEK GIĘTARZA: odręczna notatka +/- mm (np. "+2", "-1.5mm", "dać +2")
+
+ODCZYTAJ i zwróć TYLKO JSON:
+{
+  "nr": "250.383.101.01",
+  "mat": "20MnCr5",
+  "t": 5,
+  "R": 10,
+  "deg": 90,
+  "x_konstr": 246.6,
+  "korekta": 2.0,
+  "pewnosc": "wysoka",
+  "uwagi": "X=246.6mm w WZÓR PŁASKI, dopisek +2mm"
+}
+
+korekta: liczba mm z dopisku giętarza, null jeśli brak.
+Zawsze zwracaj kompletny JSON.`;
+
+  try {
+    const parts = [{ text: prompt }];
+
+    // Dodaj plik
+    parts.push({
+      inlineData: {
+        mimeType: scanFile.type === 'application/pdf' ? 'application/pdf' : scanFile.type,
+        data: scanFile.b64
+      }
+    });
+
+    const resp = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts }],
+        generationConfig: { temperature: 0.1, maxOutputTokens: 800 }
+      })
+    });
+
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    const raw = data.candidates[0].content.parts[0].text.trim();
+    console.log('Gemini:', raw);
+
+    const m = raw.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('Brak JSON');
+    const parsed = JSON.parse(m[0]);
+
+    fillScanForm(parsed);
+    document.getElementById('scan-ai-dot').className = 'ai-dot dot-ok';
+    document.getElementById('scan-ai-txt').innerHTML =
+      `Odczytano <span style="background:rgba(40,165,90,.12);color:var(--green);padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600">pewność: ${parsed.pewnosc||'?'}</span>`;
+
+    if(parsed.x_konstr && parsed.R) runScanCalcAuto(parsed);
+
+  } catch(e) {
+    console.error('Gemini błąd:', e.message);
+    document.getElementById('scan-ai-dot').className = 'ai-dot dot-err';
+    document.getElementById('scan-ai-txt').textContent = 'Błąd: ' + e.message.substring(0,60) + ' — uzupełnij ręcznie';
+    document.getElementById('scan-form').classList.remove('hidden');
+  }
+}
+
+function fillScanForm(d) {
+  const set = (id, val) => {
+    if(val===null||val===undefined||val==='') return;
+    const el = document.getElementById(id);
+    el.value = val;
+    el.style.borderColor = 'var(--green)';
+    el.style.background = 'rgba(40,165,90,.08)';
+    setTimeout(()=>{ el.style.borderColor=''; el.style.background=''; }, 3000);
+  };
+  set('sf-nr', d.nr);
+  set('sf-mat', d.mat);
+  set('sf-t', d.t);
+  set('sf-r', d.R);
+  set('sf-a', d.deg||90);
+  set('sf-x', d.x_konstr);
+  if(d.korekta !== null && d.korekta !== undefined) set('sf-kor', d.korekta);
+  document.getElementById('scan-form').classList.remove('hidden');
+}
+
+function runScanCalcAuto(d) {
+  const R = d.R, deg = d.deg||90, x = d.x_konstr, kor = d.korekta;
+  if(!R || !x) return;
+
+  // Znajdź korektę z bazy jeśli brak dopisku
+  let korFinal = kor;
+  let korSrc = 'dopisek giętarza';
+  if(korFinal === null || korFinal === undefined) {
+    const kal = getKalib();
+    const match = kal.find(k => Math.abs(k.R-R)<0.3 && k.deg===deg && k.t===(d.t||5));
+    if(match && match.kors.length>0) {
+      korFinal = median(match.kors);
+      korSrc = `mediana z bazy (${match.kors.length} pomiarów)`;
+    }
+  }
+
+  renderScanResult({
+    nr: d.nr, mat: d.mat, t: d.t||5,
+    R, deg, x_konstr: x,
+    korekta: korFinal, kor_src: korSrc,
+    pewnosc: d.pewnosc
+  });
+}
+
+function runScanCalc() {
+  const R   = parseFloat(document.getElementById('sf-r').value)||null;
+  const deg = parseFloat(document.getElementById('sf-a').value)||90;
+  const x   = parseFloat(document.getElementById('sf-x').value)||null;
+  const kor = parseFloat(document.getElementById('sf-kor').value);
+  const t   = parseFloat(document.getElementById('sf-t').value)||5;
+  if(!R || !x) { notify('Wpisz R i X konstruktora'); return; }
+  renderScanResult({
+    nr: document.getElementById('sf-nr').value,
+    mat: document.getElementById('sf-mat').value,
+    t, R, deg, x_konstr: x,
+    korekta: isNaN(kor)?null:kor,
+    kor_src: 'ręczne',
+    pewnosc: 'ręczne'
+  });
+}
+
+function renderScanResult(d) {
+  document.getElementById('scan-empty').style.display = 'none';
+  const rc = document.getElementById('scan-result');
+  rc.style.display = 'block';
+
+  const { R, deg, x_konstr, korekta, kor_src, mat, t, nr, pewnosc } = d;
+  const x_laser = korekta !== null ? x_konstr + korekta : null;
+  const half = korekta !== null ? (korekta/2).toFixed(2) : null;
+  const sign = korekta >= 0 ? '+' : '';
+  const hSign = korekta/2 >= 0 ? '+' : '';
+  const cls = korekta === null ? 'zero' : Math.abs(korekta)<0.3 ? 'zero' : korekta>0 ? 'plus' : 'minus';
+
+  let instr = '';
+  if(korekta !== null && Math.abs(korekta) >= 0.1) {
+    instr = `
+      <div class="instr-box">
+        <div class="instr-title">// Korekta w AutoCAD</div>
+        <div class="instr-step">Wymiar konstruktora: <span class="cmd">${x_konstr.toFixed(2)} mm</span></div>
+        <div class="instr-step">Przesuń stronę A: <span class="val">${hSign}${half} mm</span></div>
+        <div class="instr-step">Przesuń stronę B: <span class="val">${hSign}${half} mm</span></div>
+        <div class="instr-step">Nowy wymiar X: <span class="val">${x_laser.toFixed(2)} mm</span></div>
+      </div>`;
+  } else if(korekta !== null) {
+    instr = `<div class="instr-box"><div class="instr-title">// Ocena</div><div class="instr-step" style="color:var(--green)">Wymiar konstruktora jest zgodny z bazą. Brak korekty.</div></div>`;
+  } else {
+    instr = `<div class="warn-box">⚠ Brak korekty od giętarza i brak danych w bazie dla R${R}/${deg}°.<br>Wykonaj próbę i zapisz korektę w zakładce Baza korekt.</div>`;
+  }
+
+  rc.innerHTML = `
+    <div class="scan-result-card">
+      <div class="src-head">
+        <span class="src-title">${nr||'Rysunek'} · ${mat||'20MnCr5'} · t=${t}mm · R${R}/${deg}°</span>
+        <span style="margin-left:auto;background:var(--bg3);padding:2px 8px;border-radius:99px;font-family:var(--mono);font-size:10px;color:var(--text3)">${pewnosc||'?'}</span>
+      </div>
+      <div class="src-body">
+
+        ${korekta !== null ? `
+        <div class="verdict-box ${cls}">
+          <div class="verd-top">
+            <div>
+              <div class="verd-lbl">Korekta X</div>
+              <div class="verd-num ${cls}">${sign}${korekta.toFixed(2)}<span style="font-size:16px;font-weight:400;color:var(--text2)"> mm</span></div>
+              <div style="font-size:11px;font-family:var(--mono);color:var(--text2);margin-top:6px">${hSign}${half} mm na stronę · ${kor_src}</div>
+            </div>
+            <div class="verd-laser">
+              <div class="verd-lbl">Do lasera</div>
+              <div class="verd-laser-num">${x_laser.toFixed(2)}<span style="font-size:13px;font-weight:400;color:var(--text2)"> mm</span></div>
+              <div style="font-size:11px;font-family:var(--mono);color:var(--text2);margin-top:6px">było: ${x_konstr.toFixed(2)} mm</div>
+            </div>
+          </div>
+          ${instr}
+        </div>` : instr}
+
+        <div class="ext-grid" style="margin-top:14px">
+          <div class="ext-item"><div class="ext-lbl">X konstruktora</div><div class="ext-val">${x_konstr.toFixed(2)}<span class="u">mm</span></div></div>
+          <div class="ext-item"><div class="ext-lbl">Promień R</div><div class="ext-val">R${R}</div></div>
+          <div class="ext-item"><div class="ext-lbl">Kąt gięcia</div><div class="ext-val">${deg}°</div></div>
+          <div class="ext-item"><div class="ext-lbl">Materiał / t</div><div class="ext-val">${mat||'—'}<span class="u">t=${t}</span></div></div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          ${x_laser?`<button class="copy-btn" onclick="navigator.clipboard.writeText('${x_laser.toFixed(2)}')">⎘ kopiuj ${x_laser.toFixed(2)} mm</button>`:''}
+          <button class="copy-btn" onclick="switchTab('baza')" style="border-color:var(--green);color:var(--green)">+ zapisz do bazy</button>
+        </div>
+      </div>
+    </div>`;
+
+  // Prefill baza
+  if(nr) document.getElementById('b-nr').value = nr;
+  if(mat) document.getElementById('b-mat').value = mat;
+  if(t)   document.getElementById('b-t').value = t;
+  if(R)   document.getElementById('b-r').value = R;
+  if(deg) document.getElementById('b-a').value = deg;
+  if(x_konstr) document.getElementById('b-x').value = x_konstr;
+  if(korekta !== null && !isNaN(korekta)) document.getElementById('b-kor').value = korekta;
+}
+
+function saveScanEntry() {
+  const R   = parseFloat(document.getElementById('sf-r').value)||null;
+  const kor = parseFloat(document.getElementById('sf-kor').value);
+  if(!R || isNaN(kor)) { notify('Uzupełnij R i korektę'); return; }
+  // Przełącz do bazy i zapisz
+  switchTab('baza');
+  setTimeout(()=>{ checkSaveBtn(); if(!document.getElementById('save-btn').disabled) saveEntry(); }, 100);
+}
+
+function resetScan() {
+  scanFile = {b64:null,type:null,name:null};
+  document.getElementById('scan-dz').classList.remove('hidden');
+  document.getElementById('scan-prev-bar').classList.add('hidden');
+  document.getElementById('scan-ai-bar').classList.add('hidden');
+  document.getElementById('scan-form').classList.add('hidden');
+  document.getElementById('scan-img-preview').style.display = 'none';
+  document.getElementById('scan-empty').style.display = '';
+  document.getElementById('scan-result').style.display = 'none';
+}
+
+async function toB64(file) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.readAsDataURL(file);
+  });
+}
+
+// Drag & drop skan
+const sdz = document.getElementById('scan-dz');
+sdz.addEventListener('dragover', e=>{ e.preventDefault(); sdz.classList.add('drag'); });
+sdz.addEventListener('dragleave', ()=> sdz.classList.remove('drag'));
+sdz.addEventListener('drop', e=>{ e.preventDefault(); sdz.classList.remove('drag'); if(e.dataTransfer.files[0]) handleScanFile(e.dataTransfer.files[0]); });
 
 // Init
 renderRef();
