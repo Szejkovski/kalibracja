@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rozwinięcie Blachy — Techmatik</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════
+   RESET & VARIABLES
+══════════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #0e0e0d;
+  --bg2:      #161614;
+  --bg3:      #1e1e1b;
+  --bg4:      #252521;
+  --line:     #2a2a26;
+  --line2:    #353530;
+  --text:     #f0ede5;
+  --text2:    #888780;
+  --text3:    #4a4a46;
+  --red:      #d63b1f;
+  --red2:     #ff4422;
+  --red-bg:   rgba(214,59,31,.08);
+  --green:    #28a55a;
+  --green-bg: rgba(40,165,90,.08);
+  --amber:    #e09020;
+  --amber-bg: rgba(224,144,32,.08);
+  --blue:     #4a90d9;
+  --blue-bg:  rgba(74,144,217,.08);
+  --mono: 'DM Mono', monospace;
+  --sans: 'Manrope', sans-serif;
+  --r: 8px;
+}
+
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans)}
+
+/* ══════════════════════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════════════════════ */
+.shell{display:grid;grid-template-rows:auto 1fr;height:100vh;overflow:hidden}
+
+/* ── TOPBAR ── */
+.topbar{
+  display:flex;align-items:center;gap:14px;
+  padding:0 24px;height:52px;
+  background:var(--bg2);border-bottom:1px solid var(--line);
+  flex-shrink:0;
+}
+.logo{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:13px;font-weight:600;
+  letter-spacing:.5px;color:var(--text);
+}
+.logo-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--red);box-shadow:0 0 8px var(--red);
+}
+.topbar-tabs{display:flex;gap:2px;margin-left:24px}
+.tab-btn{
+  height:32px;padding:0 16px;border-radius:var(--r);border:none;
+  background:none;font-family:var(--sans);font-size:12px;
+  font-weight:600;color:var(--text2);cursor:pointer;transition:.15s;
+  letter-spacing:.3px;
+}
+.tab-btn:hover{color:var(--text);background:var(--bg3)}
+.tab-btn.active{color:var(--text);background:var(--bg4)}
+.topbar-right{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.5px}
+
+/* ── PANELS ── */
+.panels{display:grid;grid-template-columns:380px 1fr;overflow:hidden}
+.left-panel{
+  background:var(--bg2);border-right:1px solid var(--line);
+  overflow-y:auto;display:flex;flex-direction:column;
+}
+.right-panel{overflow-y:auto;padding:28px 32px;background:var(--bg)}
+
+/* ── SECTIONS ── */
+.section{display:none}
+.section.active{display:block}
+
+/* ══════════════════════════════════════════════════════════
+   LEFT PANEL COMPONENTS
+══════════════════════════════════════════════════════════ */
+.panel-head{
+  padding:20px 20px 12px;
+  border-bottom:1px solid var(--line);
+}
+.panel-head h2{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text2)}
+
+.form-body{padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+
+.field-group{display:flex;flex-direction:column;gap:5px}
+.field-label{
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--text3);
+  font-family:var(--mono);
+}
+.field-input{
+  height:42px;background:var(--bg3);border:1px solid var(--line2);
+  border-radius:var(--r);padding:0 14px;
+  font-size:14px;font-family:var(--mono);font-weight:500;
+  color:var(--text);width:100%;transition:.15s;
+  appearance:none;
+}
+.field-input:focus{outline:none;border-color:var(--blue);background:var(--bg4);box-shadow:0 0 0 3px rgba(74,144,217,.12)}
+.field-input.red-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(214,59,31,.12)}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-row.trio{grid-template-columns:1fr 1fr 1fr}
+
+.divider{height:1px;background:var(--line);margin:4px 0}
+
+/* Przycisk oblicz */
+.calc-btn{
+  width:100%;height:46px;border:none;border-radius:var(--r);
+  background:var(--red);color:#fff;
+  font-family:var(--sans);font-size:13px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;
+  cursor:pointer;transition:.15s;margin-top:4px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.calc-btn:hover{background:var(--red2);transform:translateY(-1px)}
+.calc-btn:active{transform:translateY(0)}
+
+/* ══════════════════════════════════════════════════════════
+   RIGHT PANEL — WYNIKI
+══════════════════════════════════════════════════════════ */
+.result-empty{
+  height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;
+  color:var(--text3);
+}
+.result-empty-icon{
+  width:72px;height:72px;border-radius:16px;
+  background:var(--bg2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+}
+.result-empty p{font-family:var(--mono);font-size:12px;text-align:center;line-height:1.8}
+
+/* WYNIK GŁÓWNY */
+.result-main{
+  background:var(--bg2);border-radius:16px;
+  border:1px solid var(--line);overflow:hidden;margin-bottom:20px;
+}
+.result-hero{
+  padding:28px 28px 24px;
+  background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:flex-end;justify-content:space-between;
+}
+.result-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text2);margin-bottom:8px;font-family:var(--mono)}
+.result-value{font-size:52px;font-weight:800;font-family:var(--mono);color:var(--text);line-height:1}
+.result-unit{font-size:18px;font-weight:400;color:var(--text2);margin-left:4px}
+.result-badge{
+  display:inline-block;padding:6px 14px;border-radius:99px;
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  background:var(--green-bg);color:var(--green);
+  border:1px solid rgba(40,165,90,.2);
+}
+.result-grid{display:grid;grid-template-columns:1fr 1fr 1fr;padding:0}
+.result-cell{
+  padding:18px 20px;border-right:1px solid var(--line);
+}
+.result-cell:last-child{border-right:none}
+.rc-label{font-size:10px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.rc-val{font-size:16px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.rc-val.green{color:var(--green)}
+.rc-val.amber{color:var(--amber)}
+
+/* BREAKDOWN */
+.breakdown{background:var(--bg2);border-radius:12px;border:1px solid var(--line);margin-bottom:20px;overflow:hidden}
+.breakdown-head{padding:12px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.breakdown-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);font-family:var(--mono)}
+.breakdown-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;
+}
+.breakdown-row:last-child{border-bottom:none}
+.br-label{color:var(--text2)}
+.br-val{font-weight:600;color:var(--text)}
+.br-val.accent{color:var(--green);font-size:14px}
+.br-line{height:1px;background:linear-gradient(90deg,transparent,var(--line2),transparent);margin:0 18px}
+
+/* NARZĘDZIE */
+.tool-card{
+  background:var(--amber-bg);border:1px solid rgba(224,144,32,.2);
+  border-radius:12px;padding:16px 18px;margin-bottom:20px;
+  display:flex;align-items:center;gap:12px;
+}
+.tool-icon{font-size:20px}
+.tool-name{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--amber)}
+.tool-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* ══════════════════════════════════════════════════════════
+   BAZA KOREKT
+══════════════════════════════════════════════════════════ */
+.baza-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;height:calc(100vh - 52px);overflow:hidden}
+.baza-left{overflow-y:auto;padding:24px 20px 24px 32px}
+.baza-right{overflow-y:auto;padding:24px 32px 24px 20px}
+
+.baza-section-title{
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text2);font-family:var(--mono);margin-bottom:14px;
+}
+
+/* Form dodawania */
+.add-form{
+  background:var(--bg2);border:1px solid var(--line);
+  border-radius:12px;padding:20px;margin-bottom:20px;
+}
+.add-form .field-group{margin-bottom:10px}
+.save-btn{
+  width:100%;height:40px;border:none;border-radius:var(--r);
+  background:var(--green);color:#fff;
+  font-family:var(--sans);font-size:12px;font-weight:700;
+  letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:.15s;
+}
+.save-btn:hover{background:#30c068}
+.save-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* Tabela mediany */
+.median-table{background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.mt-head{
+  display:grid;grid-template-columns:70px 60px 50px 1fr 90px 80px;
+  gap:0;padding:10px 16px;
+  background:var(--bg3);border-bottom:1px solid var(--line);
+  font-size:10px;font-family:var(--mono);color:var(--text3);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.mt-row{
+  display:grid;grid-template-columns:70px 60px 50px 1fr 90px 80px;
+  gap:0;padding:11px 16px;
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:12px;align-items:center;
+  transition:.1s;
+}
+.mt-row:last-child{border-bottom:none}
+.mt-row:hover{background:var(--bg3)}
+.mt-r{font-weight:700;color:var(--text)}
+.mt-kor{font-weight:700;font-size:13px}
+.mt-kor.pos{color:var(--green)}
+.mt-kor.neg{color:var(--red2)}
+.mt-kor.zero{color:var(--text2)}
+.mt-n{color:var(--text3);font-size:11px}
+.mt-conf{font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600}
+.c-high{background:rgba(40,165,90,.12);color:var(--green)}
+.c-med{background:rgba(224,144,32,.12);color:var(--amber)}
+.c-low{background:rgba(74,144,217,.12);color:var(--blue)}
+.c-none{background:var(--bg3);color:var(--text3)}
+.mt-half{color:var(--text2);font-size:11px}
+
+/* Historia */
+.hist-table{background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ht-head{
+  display:grid;grid-template-columns:100px 60px 80px 80px 1fr;
+  padding:9px 16px;background:var(--bg3);border-bottom:1px solid var(--line);
+  font-size:10px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.5px;
+}
+.ht-row{
+  display:grid;grid-template-columns:100px 60px 80px 80px 1fr;
+  padding:10px 16px;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;align-items:center;
+}
+.ht-row:last-child{border-bottom:none}
+.ht-nr{color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ht-r{color:var(--text2)}
+.ht-kor{font-weight:700}
+.ht-kor.pos{color:var(--green)}
+.ht-kor.neg{color:var(--red2)}
+.ht-date{color:var(--text3);font-size:10px}
+.ht-del{width:22px;height:22px;background:none;border:1px solid var(--line2);border-radius:4px;cursor:pointer;color:var(--text3);font-size:12px;display:flex;align-items:center;justify-content:center;transition:.1s;justify-self:end}
+.ht-del:hover{border-color:var(--red2);color:var(--red2)}
+
+.empty-state{padding:28px;text-align:center;color:var(--text3);font-size:12px;font-family:var(--mono);line-height:1.8}
+
+/* ══════════════════════════════════════════════════════════
+   TABELA REFERENCYJNA
+══════════════════════════════════════════════════════════ */
+.ref-wrap{padding:28px 32px}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:16px}
+.ref-card{
+  background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+  padding:16px 18px;transition:.15s;
+}
+.ref-card:hover{border-color:var(--line2);background:var(--bg3)}
+.ref-r{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--text);margin-bottom:4px}
+.ref-z{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--green);margin-bottom:2px}
+.ref-z span{font-size:12px;color:var(--text2);font-weight:400}
+.ref-narz{font-size:11px;color:var(--amber);margin-bottom:6px}
+.ref-minl{font-size:11px;color:var(--text3)}
+
+/* ══════════════════════════════════════════════════════════
+   NOTIF
+══════════════════════════════════════════════════════════ */
+.notif{
+  position:fixed;bottom:20px;right:20px;
+  background:var(--bg4);border:1px solid var(--line2);
+  padding:12px 18px;border-radius:var(--r);
+  font-family:var(--mono);font-size:12px;color:var(--text);
+  opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:100;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.notif.show{opacity:1;transform:translateY(0)}
+
+/* ══════════════════════════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════════════════════════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ══ TOPBAR ══════════════════════════════════════════════ -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <span>TECHMATIK</span>
+    <span style="color:var(--text3);font-weight:400">/ Rozwinięcie Blachy</span>
+  </div>
+  <div class="topbar-tabs">
+    <button class="tab-btn active" onclick="switchTab('kalk')">Kalkulator</button>
+    <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
+    <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
+  </div>
+  <div class="topbar-right">20MnCr5 / 16MnCr5 · t=5mm · v2.0</div>
+</div>
+
+<!-- ══ KALKULATOR ══════════════════════════════════════════ -->
+<div id="tab-kalk" class="section active">
+  <div class="panels">
+
+    <!-- LEWA: FORMULARZ -->
+    <div class="left-panel">
+      <div class="panel-head"><h2>Parametry gięcia</h2></div>
+      <div class="form-body">
+
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">Promień R (mm)</div>
+            <input class="field-input" type="number" id="k-r" value="10" min="1" step="0.5" oninput="onCalcChange()">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Kąt α (°)</div>
+            <input class="field-input" type="number" id="k-a" value="90" min="1" max="180" oninput="onCalcChange()">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Liczba zagięć</div>
+          <input class="field-input" type="number" id="k-n" value="1" min="1" max="20" oninput="onCalcChange()">
+        </div>
+
+        <div class="divider"></div>
+        <div class="panel-head" style="padding:0 0 8px;border:none"><h2>Ramiona blachy</h2></div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">Ramię A (mm)</div>
+            <input class="field-input" type="number" id="k-a1" value="50" min="0" oninput="onCalcChange()">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Ramię B (mm)</div>
+            <input class="field-input" type="number" id="k-b" value="50" min="0" oninput="onCalcChange()">
+          </div>
+        </div>
+
+        <div id="extra-arms"></div>
+
+        <button class="tab-btn" onclick="addArm()" style="width:100%;height:36px;border:1px dashed var(--line2);border-radius:var(--r);margin-top:2px">
+          + dodaj ramię
+        </button>
+
+        <div class="divider"></div>
+        <button class="calc-btn" onclick="calculate()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          OBLICZ ROZWINIĘCIE
+        </button>
+
+      </div>
+    </div>
+
+    <!-- PRAWA: WYNIKI -->
+    <div class="right-panel" id="right-panel">
+      <div class="result-empty" id="empty-state">
+        <div class="result-empty-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="8" width="24" height="12" rx="3" stroke="#4a4a46" stroke-width="1.5" fill="none"/>
+            <path d="M8 8V5M20 8V5" stroke="#4a4a46" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M6 14h16" stroke="#4a4a46" stroke-width="1" stroke-dasharray="3 2" opacity=".5"/>
+          </svg>
+        </div>
+        <p>Wpisz parametry i kliknij<br>OBLICZ ROZWINIĘCIE</p>
+      </div>
+      <div id="result-content" style="display:none"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ BAZA KOREKT ══════════════════════════════════════════ -->
+<div id="tab-baza" class="section">
+  <div class="baza-layout">
+
+    <!-- LEWA: DODAJ POMIAR + HISTORIA -->
+    <div class="baza-left">
+      <div class="baza-section-title">Dodaj korektę giętarza</div>
+      <div class="add-form">
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">Nr detalu</div>
+            <input class="field-input" type="text" id="b-nr" placeholder="250.383.101.01">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Materiał</div>
+            <select class="field-input" id="b-mat">
+              <option>20MnCr5</option><option>16MnCr5</option>
+              <option>S355J2+N</option><option>S235JR</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row trio" style="margin-top:10px">
+          <div class="field-group">
+            <div class="field-label">R (mm)</div>
+            <input class="field-input" type="number" id="b-r" placeholder="10" step="0.5" oninput="checkSaveBtn()">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Kąt (°)</div>
+            <input class="field-input" type="number" id="b-a" value="90" min="1" max="180">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Grubość t</div>
+            <select class="field-input" id="b-t">
+              <option value="5">5 mm</option><option value="4">4 mm</option>
+              <option value="3">3 mm</option><option value="6">6 mm</option>
+              <option value="8">8 mm</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row" style="margin-top:10px">
+          <div class="field-group">
+            <div class="field-label">X konstruktora (mm)</div>
+            <input class="field-input" type="number" id="b-x" placeholder="246.6" step="0.1">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Korekta giętarza (mm)</div>
+            <input class="field-input red-input" type="number" id="b-kor" placeholder="+2 lub -1.5" step="0.1" oninput="checkSaveBtn();updateKorDisplay()">
+          </div>
+        </div>
+        <div id="kor-display" style="display:none;margin-top:8px;padding:10px 12px;background:var(--bg3);border-radius:var(--r);font-family:var(--mono);font-size:11px;color:var(--text2)"></div>
+        <div class="field-group" style="margin-top:10px">
+          <div class="field-label">Narzędzie (opcja)</div>
+          <input class="field-input" type="text" id="b-narz" placeholder="R10 V50">
+        </div>
+        <button class="save-btn" id="save-btn" onclick="saveEntry()" disabled style="margin-top:14px">
+          ZAPISZ POMIAR
+        </button>
+      </div>
+
+      <div class="baza-section-title">Historia pomiarów</div>
+      <div class="hist-table">
+        <div class="ht-head">
+          <span>Nr detalu</span><span>R/kąt</span><span>X konstr.</span><span>Korekta</span><span></span>
+        </div>
+        <div id="hist-body"></div>
+      </div>
+    </div>
+
+    <!-- PRAWA: MEDIANA -->
+    <div class="baza-right">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="baza-section-title" style="margin:0">Mediana korekt per R</div>
+        <div style="display:flex;gap:6px">
+          <button class="tab-btn" onclick="exportCSV()" style="height:28px;font-size:10px">↓ CSV</button>
+          <button class="tab-btn" onclick="clearAll()" style="height:28px;font-size:10px;color:var(--red2)">Wyczyść</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+        <div style="background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:14px 16px">
+          <div style="font-size:24px;font-weight:800;font-family:var(--mono)" id="st-total">0</div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Pomiarów</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:14px 16px">
+          <div style="font-size:24px;font-weight:800;font-family:var(--mono)" id="st-r">0</div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Różnych R</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:14px 16px">
+          <div style="font-size:24px;font-weight:800;font-family:var(--mono)" id="st-high">0</div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Wysoka pewność</div>
+        </div>
+      </div>
+
+      <div class="median-table">
+        <div class="mt-head">
+          <span>R / kąt</span><span>n</span><span>t</span><span>Mediana</span><span>Na stronę</span><span>Pewność</span>
+        </div>
+        <div id="median-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TABELA R ══════════════════════════════════════════════ -->
+<div id="tab-tabela" class="section">
+  <div class="ref-wrap">
+    <div class="baza-section-title">Tabela pomiarowa giętarza — 20MnCr5/16MnCr5 · t=5mm</div>
+    <div class="ref-grid" id="ref-grid"></div>
+  </div>
+</div>
+
+</div><!-- /shell -->
+<div class="notif" id="notif"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// TABELA Z-WARTOŚCI
+// ═══════════════════════════════════════════════════════════
+const TABLE = [
+  {R:8.5,  Z:8.375, narz:'R1 V22 / R3 V22',       minL:17},
+  {R:9,    Z:8.6,   narz:'R1 V25',                 minL:19},
+  {R:10,   Z:8.8,   narz:'R3 V25',                 minL:19},
+  {R:10.5, Z:8.9,   narz:'R4 V25',                 minL:19},
+  {R:11,   Z:9.4,   narz:'R3 V35',                 minL:23.8},
+  {R:12,   Z:9.6,   narz:'R5 V35 / R6 V30',        minL:21.8},
+  {R:13,   Z:10.3,  narz:'R6 V40',                 minL:27.5},
+  {R:14,   Z:10.6,  narz:'R6 V50 / R8 V40',        minL:27.7},
+  {R:15,   Z:11.1,  narz:'R10 V40 / R8 V50',       minL:24.7},
+  {R:16,   Z:11.5,  narz:'R10 V50 / R8 V63',       minL:32},
+  {R:17,   Z:11.7,  narz:'R10 V63',                minL:41},
+  {R:17.5, Z:12.5,  narz:'R12 V50',                minL:32.5},
+  {R:18,   Z:12.5,  narz:'R12 V63',                minL:41},
+  {R:20,   Z:13.6,  narz:'R15 V63 / R15 V50',      minL:34.5},
+  {R:25,   Z:15.3,  narz:'R20 V63',                minL:43.5},
+  {R:30,   Z:17.7,  narz:'R25 V63',                minL:45},
+].sort((a,b)=>a.R-b.R);
+
+function getZ(R, deg=90) {
+  const T = TABLE;
+  let Z;
+  if(R <= T[0].R) Z = T[0].Z;
+  else if(R >= T[T.length-1].R) Z = T[T.length-1].Z;
+  else {
+    for(let i=0;i<T.length-1;i++){
+      if(R>=T[i].R && R<=T[i+1].R){
+        const f=(R-T[i].R)/(T[i+1].R-T[i].R);
+        Z=T[i].Z+f*(T[i+1].Z-T[i].Z);
+        break;
+      }
+    }
+  }
+  return Z*(deg/90);
+}
+
+function getNarz(R){
+  return TABLE.reduce((a,b)=>Math.abs(b.R-R)<Math.abs(a.R-R)?b:a).narz;
+}
+
+function inRange(R){ return R>=TABLE[0].R && R<=TABLE[TABLE.length-1].R; }
+
+// ═══════════════════════════════════════════════════════════
+// KALKULATOR
+// ═══════════════════════════════════════════════════════════
+let extraArms = [];
+
+function addArm(){
+  const idx = extraArms.length;
+  extraArms.push(50);
+  renderExtraArms();
+  onCalcChange();
+}
+
+function renderExtraArms(){
+  const wrap = document.getElementById('extra-arms');
+  wrap.innerHTML = extraArms.map((v,i)=>`
+    <div class="field-row" style="margin-top:8px">
+      <div class="field-group">
+        <div class="field-label">Ramię ${String.fromCharCode(67+i)} (mm)</div>
+        <input class="field-input" type="number" value="${v}" min="0"
+          oninput="extraArms[${i}]=parseFloat(this.value)||0;onCalcChange()">
+      </div>
+      <div style="display:flex;align-items:flex-end;padding-bottom:2px">
+        <button class="tab-btn" onclick="removeArm(${i})"
+          style="height:42px;width:42px;color:var(--red2);border:1px solid var(--line2);border-radius:var(--r)">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function removeArm(i){
+  extraArms.splice(i,1);
+  renderExtraArms();
+  onCalcChange();
+}
+
+function onCalcChange(){ /* live update może być opcjonalne */ }
+
+function calculate(){
+  const R   = parseFloat(document.getElementById('k-r').value)||0;
+  const deg = parseFloat(document.getElementById('k-a').value)||90;
+  const n   = parseInt(document.getElementById('k-n').value)||1;
+  const a1  = parseFloat(document.getElementById('k-a1').value)||0;
+  const b   = parseFloat(document.getElementById('k-b').value)||0;
+  const extras = extraArms.reduce((s,v)=>s+v,0);
+  const sumArms = a1 + b + extras;
+
+  const BA   = getZ(R, deg);
+  const total = sumArms + n*BA;
+  const narz  = getNarz(R);
+  const src   = inRange(R) ? 'tabela' : 'wzór K=0.40';
+
+  document.getElementById('empty-state').style.display='none';
+  const rc = document.getElementById('result-content');
+  rc.style.display='block';
+
+  rc.innerHTML = `
+    <div class="result-main">
+      <div class="result-hero">
+        <div>
+          <div class="result-label">Długość rozwinięcia</div>
+          <div>
+            <span class="result-value">${total.toFixed(2)}</span>
+            <span class="result-unit">mm</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="result-badge">${src}</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:8px">R${R} · ${deg}° · ${n}× zagięcia</div>
+        </div>
+      </div>
+      <div class="result-grid">
+        <div class="result-cell">
+          <div class="rc-label">BA łącznie</div>
+          <div class="rc-val green">${(n*BA).toFixed(3)} mm</div>
+        </div>
+        <div class="result-cell">
+          <div class="rc-label">Suma ramion</div>
+          <div class="rc-val">${sumArms.toFixed(1)} mm</div>
+        </div>
+        <div class="result-cell">
+          <div class="rc-label">BA / zagięcie</div>
+          <div class="rc-val green">${BA.toFixed(3)} mm</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <span class="tool-icon">🔧</span>
+      <div>
+        <div class="tool-name">${narz}</div>
+        <div class="tool-sub">Sugerowane narzędzie dla R${R}</div>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <div class="breakdown-head">
+        <span class="breakdown-title">Szczegóły obliczeń</span>
+      </div>
+      <div class="breakdown-row"><span class="br-label">Ramię A</span><span class="br-val">${a1.toFixed(1)} mm</span></div>
+      <div class="breakdown-row"><span class="br-label">Ramię B</span><span class="br-val">${b.toFixed(1)} mm</span></div>
+      ${extraArms.map((v,i)=>`<div class="breakdown-row"><span class="br-label">Ramię ${String.fromCharCode(67+i)}</span><span class="br-val">${v.toFixed(1)} mm</span></div>`).join('')}
+      <div class="breakdown-row"><span class="br-label">BA × ${n} zagięcia</span><span class="br-val">${(n*BA).toFixed(3)} mm</span></div>
+      <div class="br-line"></div>
+      <div class="breakdown-row"><span class="br-label" style="font-weight:700;color:var(--text)">Rozwinięcie</span><span class="br-val accent">${total.toFixed(2)} mm</span></div>
+    </div>
+
+    <div style="font-size:11px;color:var(--text3);font-family:var(--mono);padding:4px 2px">
+      Z=${BA.toFixed(4)}mm z ${src} · kąt ${deg}° (skala: ${(deg/90).toFixed(3)}×)
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════
+// BAZA KOREKT
+// ═══════════════════════════════════════════════════════════
+let db = JSON.parse(localStorage.getItem('techmatik_db')||'[]');
+function saveDB(){ try{localStorage.setItem('techmatik_db',JSON.stringify(db))}catch(e){} }
+
+function median(arr){
+  if(!arr.length) return null;
+  const s=[...arr].sort((a,b)=>a-b);
+  const m=Math.floor(s.length/2);
+  return s.length%2?s[m]:(s[m-1]+s[m])/2;
+}
+
+function checkSaveBtn(){
+  const r=document.getElementById('b-r').value;
+  const k=document.getElementById('b-kor').value;
+  document.getElementById('save-btn').disabled=!(r&&k!=='');
+}
+
+function updateKorDisplay(){
+  const kor=parseFloat(document.getElementById('b-kor').value);
+  const x=parseFloat(document.getElementById('b-x').value);
+  const d=document.getElementById('kor-display');
+  if(!isNaN(kor)){
+    const sign=kor>=0?'+':'';
+    const half=(kor/2).toFixed(2);
+    const hSign=kor/2>=0?'+':'';
+    const laser=isNaN(x)?'—':(x+kor).toFixed(2);
+    d.style.display='block';
+    d.innerHTML=`Korekta: <b style="color:${kor>=0?'var(--green)':'var(--red2)'}">${sign}${kor}mm</b>`+
+      ` &nbsp;·&nbsp; Na stronę: <b style="color:var(--text)">${hSign}${half}mm</b>`+
+      (!isNaN(x)?` &nbsp;·&nbsp; X laser: <b style="color:var(--green)">${laser}mm</b>`:'');
+  } else { d.style.display='none'; }
+}
+
+function saveEntry(){
+  const e={
+    id:Date.now(),
+    nr:document.getElementById('b-nr').value||'—',
+    mat:document.getElementById('b-mat').value,
+    t:parseFloat(document.getElementById('b-t').value)||5,
+    R:parseFloat(document.getElementById('b-r').value)||null,
+    deg:parseFloat(document.getElementById('b-a').value)||90,
+    x:parseFloat(document.getElementById('b-x').value)||null,
+    kor:parseFloat(document.getElementById('b-kor').value),
+    narz:document.getElementById('b-narz').value||'',
+    date:new Date().toLocaleDateString('pl-PL'),
+  };
+  db.unshift(e);
+  saveDB();
+  notify(`✓ R${e.R}/${e.deg}° · korekta ${e.kor>=0?'+':''}${e.kor}mm`);
+  // Reset
+  ['b-nr','b-r','b-x','b-kor','b-narz'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('b-a').value=90;
+  document.getElementById('kor-display').style.display='none';
+  document.getElementById('save-btn').disabled=true;
+  renderBaza();
+}
+
+function delEntry(id){ db=db.filter(e=>e.id!==id); saveDB(); renderBaza(); }
+
+function clearAll(){
+  if(!confirm('Wyczyścić całą bazę korekt?')) return;
+  db=[]; saveDB(); renderBaza();
+}
+
+function exportCSV(){
+  const kal=getKalib();
+  let csv='Materiał;t;R;Kąt;n;Mediana;Na stronę\n';
+  kal.forEach(k=>{ const m=median(k.kors); csv+=`${k.mat};${k.t};${k.R};${k.deg};${k.kors.length};${m!=null?m.toFixed(3):'—'};${m!=null?(m/2).toFixed(3):'—'}\n`; });
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='kalibracja_techmatik.csv'; a.click();
+}
+
+function getKalib(){
+  const g={};
+  db.forEach(e=>{
+    const k=`${e.mat}::${e.t}::${e.R}::${e.deg}`;
+    if(!g[k]) g[k]={mat:e.mat,t:e.t,R:e.R,deg:e.deg,kors:[]};
+    g[k].kors.push(e.kor);
+  });
+  return Object.values(g).sort((a,b)=>a.R-b.R);
+}
+
+function renderBaza(){
+  const kal=getKalib();
+
+  // Stats
+  document.getElementById('st-total').textContent=db.length;
+  document.getElementById('st-r').textContent=kal.length;
+  document.getElementById('st-high').textContent=kal.filter(k=>k.kors.length>=3).length;
+
+  // Mediana
+  const mb=document.getElementById('median-body');
+  if(!kal.length){
+    mb.innerHTML='<div class="empty-state">Brak danych — dodaj pierwszy pomiar</div>';
+  } else {
+    mb.innerHTML=kal.map(k=>{
+      const m=median(k.kors);
+      const sign=m!=null&&m>=0?'+':'';
+      const cls=m==null?'zero':m>0.2?'pos':m<-0.2?'neg':'zero';
+      const n=k.kors.length;
+      const conf=n>=3?{c:'c-high',t:'wysoka'}:n>=2?{c:'c-med',t:'średnia'}:n>=1?{c:'c-low',t:'1 pom.'}:{c:'c-none',t:'—'};
+      return `<div class="mt-row">
+        <span class="mt-r">R${k.R}/${k.deg}°</span>
+        <span class="mt-n">${n}×</span>
+        <span class="mt-n">${k.t}mm</span>
+        <span class="mt-kor ${cls}">${m!=null?sign+m.toFixed(2)+'mm':'—'}</span>
+        <span class="mt-half">${m!=null?(m/2>=0?'+':'')+(m/2).toFixed(2)+'mm':'—'}</span>
+        <span><span class="mt-conf ${conf.c}">${conf.t}</span></span>
+      </div>`;
+    }).join('');
+  }
+
+  // Historia
+  const hb=document.getElementById('hist-body');
+  if(!db.length){
+    hb.innerHTML='<div class="empty-state">Brak pomiarów</div>';
+  } else {
+    hb.innerHTML=db.slice(0,30).map(e=>{
+      const cls=e.kor>0.1?'pos':e.kor<-0.1?'neg':'zero';
+      const sign=e.kor>=0?'+':'';
+      return `<div class="ht-row">
+        <span class="ht-nr" title="${e.nr}">${e.nr}</span>
+        <span class="ht-r">R${e.R}/${e.deg}°</span>
+        <span style="color:var(--text2);font-size:11px">${e.x!=null?e.x+'mm':'—'}</span>
+        <span class="ht-kor ${cls}">${sign}${e.kor}mm</span>
+        <button class="ht-del" onclick="delEntry(${e.id})">×</button>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TABELA REFERENCYJNA
+// ═══════════════════════════════════════════════════════════
+function renderRef(){
+  document.getElementById('ref-grid').innerHTML = TABLE.map(row=>`
+    <div class="ref-card">
+      <div class="ref-r">R ${row.R} mm</div>
+      <div class="ref-z">${row.Z.toFixed(3)}<span> mm / zagięcie 90°</span></div>
+      <div class="ref-narz">🔧 ${row.narz}</div>
+      <div class="ref-minl">Min. dł. zagięcia: ${row.minL} mm</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// NAWIGACJA
+// ═══════════════════════════════════════════════════════════
+function switchTab(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['kalk','baza','tabela'][i]===name);
+  });
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='baza') renderBaza();
+  if(name==='tabela') renderRef();
+}
+
+// ═══════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════
+function notify(msg){
+  const el=document.getElementById('notif');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+// Init
+renderRef();
+</script>
+</body>
+</html>
