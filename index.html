@@ -426,7 +426,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
     <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
   </div>
-  <div class="topbar-right">20MnCr5 / 16MnCr5 · t=5mm · v2.0</div>
+  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right">20MnCr5 / 16MnCr5 · t=5mm · v2.0</div>
 </div>
 
 <!-- ══ SKAN ══════════════════════════════════════════════════ -->
@@ -1006,8 +1006,14 @@ function notify(msg){
 // ═══════════════════════════════════════════════════════════
 // GEMINI API KEY
 // ═══════════════════════════════════════════════════════════
-const GEMINI_KEY = 'AIzaSyCaFDGoGd2_1MGTnCGNRJGlhdIgua5C3RM';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+// Klucz API — wpisywany przez użytkownika, zapisywany lokalnie
+function getApiKey(){
+  return localStorage.getItem('gemini_api_key')||'';
+}
+function setApiKey(k){
+  localStorage.setItem('gemini_api_key', k.trim());
+}
+function getGeminiUrl(){ return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${getApiKey()}`; }
 
 // ═══════════════════════════════════════════════════════════
 // SKAN
@@ -1071,7 +1077,13 @@ Zawsze zwracaj kompletny JSON.`;
       { text: prompt }
     ];
 
-    const resp = await fetch(GEMINI_URL, {
+    // Sprawdź klucz
+    const apiKey = getApiKey();
+    if(!apiKey){
+      showApiKeyDialog();
+      return;
+    }
+    const resp = await fetch(getGeminiUrl(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1275,8 +1287,48 @@ sdz.addEventListener('dragover', e=>{ e.preventDefault(); sdz.classList.add('dra
 sdz.addEventListener('dragleave', ()=> sdz.classList.remove('drag'));
 sdz.addEventListener('drop', e=>{ e.preventDefault(); sdz.classList.remove('drag'); if(e.dataTransfer.files[0]) handleScanFile(e.dataTransfer.files[0]); });
 
+
+function showApiKeyDialog(){
+  document.getElementById('api-dialog').style.display='flex';
+  setTimeout(()=>document.getElementById('api-key-input').focus(),100);
+}
+function closeApiDialog(){
+  document.getElementById('api-dialog').style.display='none';
+}
+function confirmApiKey(){
+  const k = document.getElementById('api-key-input').value.trim();
+  if(!k.startsWith('AIza')){ notify('Nieprawidłowy klucz — powinien zaczynać się od AIza...'); return; }
+  setApiKey(k);
+  closeApiDialog();
+  notify('✓ Klucz API zapisany');
+  // Spróbuj ponownie skan jeśli był plik
+  if(scanFile.b64) analyzeScan();
+}
+
 // Init
 renderRef();
 </script>
+
+<!-- Dialog klucza API -->
+<div id="api-dialog" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;display:none">
+  <div style="background:var(--bg2);border:1px solid var(--line2);border-radius:16px;padding:32px;width:420px;max-width:90vw">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>
+      <span style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2)">Klucz Google Gemini API</span>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">
+      Wpisz klucz API z <strong style="color:var(--text)">aistudio.google.com/apikey</strong><br>
+      Zapisze się lokalnie w przeglądarce — nie będzie widoczny w kodzie.
+    </p>
+    <input type="password" id="api-key-input"
+      placeholder="AIza..."
+      style="width:100%;height:44px;background:var(--bg3);border:1px solid var(--line2);border-radius:8px;padding:0 14px;font-family:var(--mono);font-size:13px;color:var(--text);margin-bottom:12px">
+    <div style="display:flex;gap:8px">
+      <button onclick="confirmApiKey()" style="flex:1;height:42px;background:var(--red);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-weight:700;font-size:13px;cursor:pointer">ZAPISZ I KONTYNUUJ</button>
+      <button onclick="closeApiDialog()" style="height:42px;padding:0 16px;background:none;border:1px solid var(--line2);border-radius:8px;color:var(--text2);font-family:var(--sans);cursor:pointer">Anuluj</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
