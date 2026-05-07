@@ -434,7 +434,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
     <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
   </div>
-  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v4.9</div>
+  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v5.0</div>
 </div>
 
 <!-- ══ SKAN ══════════════════════════════════════════════════ -->
@@ -652,6 +652,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
         <div class="baza-section-title" style="margin:0">Mediana korekt per R</div>
         <div style="display:flex;gap:6px">
           <button class="tab-btn" onclick="exportCSV()" style="height:28px;font-size:10px">↓ CSV</button>
+          <button class="tab-btn" onclick="exportJSON()" style="height:28px;font-size:10px;color:var(--blue)">↓ kopia JSON</button>
+          <label class="tab-btn" style="height:28px;font-size:10px;color:var(--green);cursor:pointer;display:inline-flex;align-items:center;padding:0 12px">↑ wczytaj JSON<input type="file" id="import-fi" accept=".json" style="display:none" onchange="importJSON(this)"></label>
           <button class="tab-btn" onclick="clearAll()" style="height:28px;font-size:10px;color:var(--red2)">Wyczyść</button>
         </div>
       </div>
