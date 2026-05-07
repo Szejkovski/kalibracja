@@ -434,7 +434,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
     <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
   </div>
-  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v4.8</div>
+  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v4.9</div>
 </div>
 
 <!-- ══ SKAN ══════════════════════════════════════════════════ -->
@@ -933,6 +933,42 @@ function delEntry(id){ db=db.filter(e=>e.id!==id); saveDB(); renderBaza(); }
 function clearAll(){
   if(!confirm('Wyczyścić całą bazę korekt?')) return;
   db=[]; saveDB(); renderBaza();
+}
+
+function exportJSON(){
+  const data = {
+    version: 1,
+    exported: new Date().toISOString(),
+    db: db
+  };
+  const a = document.createElement('a');
+  a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
+  a.download = 'techmatik_baza_korekt_' + new Date().toLocaleDateString('pl-PL').replace(/\./g,'-') + '.json';
+  a.click();
+  notify('✓ Zapisano kopię bazy na dysk');
+}
+
+function importJSON(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const imported = data.db || data; // obsłuż oba formaty
+      if(!Array.isArray(imported)) throw new Error('Nieprawidłowy format');
+      if(confirm(`Wczytać ${imported.length} wpisów? Obecna baza (${db.length} wpisów) zostanie zastąpiona.`)){
+        db = imported;
+        saveDB();
+        renderBaza();
+        notify(`✓ Wczytano ${imported.length} wpisów z pliku`);
+      }
+    } catch(err) {
+      alert('Błąd wczytywania: ' + err.message);
+    }
+    input.value = ''; // reset
+  };
+  reader.readAsText(file);
 }
 
 function exportCSV(){
