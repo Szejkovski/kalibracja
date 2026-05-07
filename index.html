@@ -434,7 +434,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
     <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
   </div>
-  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v5.0</div>
+  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v5.1</div>
 </div>
 
 <!-- ══ SKAN ══════════════════════════════════════════════════ -->
@@ -1362,6 +1362,9 @@ function renderScanResult(d) {
   if(deg) document.getElementById('b-a').value = deg;
   if(x_konstr) document.getElementById('b-x').value = x_konstr;
   if(korekta !== null && !isNaN(korekta)) document.getElementById('b-kor').value = korekta;
+  // Prefill dół jeśli AI odczytał
+  if(d && d.x_dol) { const el=document.getElementById('b-x2'); if(el) el.value=d.x_dol; }
+  if(d && d.korekta_dol!==null && d.korekta_dol!==undefined) { const el=document.getElementById('b-kor2'); if(el) el.value=d.korekta_dol; }
 }
 
 function saveScanEntry() {
