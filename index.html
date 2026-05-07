@@ -434,7 +434,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
     <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
   </div>
-  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v4.7</div>
+  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v4.8</div>
 </div>
 
 <!-- ══ SKAN ══════════════════════════════════════════════════ -->
@@ -672,8 +672,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
       </div>
 
       <div class="median-table">
-        <div class="mt-head">
-          <span>R / kąt</span><span>n</span><span>t</span><span>Mediana</span><span>Na stronę</span><span>Pewność</span>
+        <div class="mt-head" style="grid-template-columns:70px 50px 40px 1fr 1fr 80px 70px">
+          <span>R / kąt</span><span>n</span><span>t</span><span>Med. góra</span><span>Med. dół</span><span>Na stronę</span><span>Pewność</span>
         </div>
         <div id="median-body"></div>
       </div>
@@ -948,8 +948,9 @@ function getKalib(){
   const g={};
   db.forEach(e=>{
     const k=`${e.mat}::${e.t}::${e.R}::${e.deg}`;
-    if(!g[k]) g[k]={mat:e.mat,t:e.t,R:e.R,deg:e.deg,kors:[]};
+    if(!g[k]) g[k]={mat:e.mat,t:e.t,R:e.R,deg:e.deg,kors:[],kors2:[]};
     g[k].kors.push(e.kor);
+    if(e.kor2!==null && e.kor2!==undefined) g[k].kors2.push(e.kor2);
   });
   return Object.values(g).sort((a,b)=>a.R-b.R);
 }
@@ -969,16 +970,19 @@ function renderBaza(){
   } else {
     mb.innerHTML=kal.map(k=>{
       const m=median(k.kors);
+      const m2=k.kors2.length>0?median(k.kors2):null;
       const sign=m!=null&&m>=0?'+':'';
       const cls=m==null?'zero':m>0.2?'pos':m<-0.2?'neg':'zero';
       const n=k.kors.length;
       const conf=n>=3?{c:'c-high',t:'wysoka'}:n>=2?{c:'c-med',t:'średnia'}:n>=1?{c:'c-low',t:'1 pom.'}:{c:'c-none',t:'—'};
-      return `<div class="mt-row">
+      const half=m!=null?(m/2>=0?'+':'')+(m/2).toFixed(2)+'mm':'—';
+      return `<div class="mt-row" style="grid-template-columns:70px 50px 40px 1fr 1fr 80px 70px">
         <span class="mt-r">R${k.R}/${k.deg}°</span>
         <span class="mt-n">${n}×</span>
         <span class="mt-n">${k.t}mm</span>
         <span class="mt-kor ${cls}">${m!=null?sign+m.toFixed(2)+'mm':'—'}</span>
-        <span class="mt-half">${m!=null?(m/2>=0?'+':'')+(m/2).toFixed(2)+'mm':'—'}</span>
+        <span class="mt-kor ${m2==null?'zero':m2>0.2?'pos':m2<-0.2?'neg':'zero'}">${m2!=null?(m2>=0?'+':'')+m2.toFixed(2)+'mm':'—'}</span>
+        <span class="mt-half">${half}</span>
         <span><span class="mt-conf ${conf.c}">${conf.t}</span></span>
       </div>`;
     }).join('');
