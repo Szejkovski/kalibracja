@@ -434,7 +434,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
     <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
   </div>
-  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v4.5</div>
+  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v4.6</div>
 </div>
 
 <!-- ══ SKAN ══════════════════════════════════════════════════ -->
@@ -733,6 +733,12 @@ function getZ(R, deg=90) {
 }
 
 function getNarz(R){
+  const row = TABLE.reduce((a,b)=>Math.abs(b.R-R)<Math.abs(a.R-R)?b:a);
+  // Zwróć tylko pierwsze narzędzie z listy (przed " / ")
+  return row.narz.split(' / ')[0].trim();
+}
+
+function getAllNarz(R){
   return TABLE.reduce((a,b)=>Math.abs(b.R-R)<Math.abs(a.R-R)?b:a).narz;
 }
 
