@@ -256,12 +256,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 /* Historia */
 .hist-table{background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .ht-head{
-  display:grid;grid-template-columns:100px 60px 80px 80px 1fr;
+  display:grid;grid-template-columns:100px 70px 80px 80px 1fr;
   padding:9px 16px;background:var(--bg3);border-bottom:1px solid var(--line);
   font-size:10px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.5px;
 }
 .ht-row{
-  display:grid;grid-template-columns:100px 60px 80px 80px 1fr;
+  display:grid;grid-template-columns:100px 70px 80px 80px 1fr;
   padding:10px 16px;border-bottom:1px solid var(--line);
   font-family:var(--mono);font-size:11px;align-items:center;
 }
@@ -434,7 +434,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <button class="tab-btn" onclick="switchTab('baza')">Baza korekt</button>
     <button class="tab-btn" onclick="switchTab('tabela')">Tabela R</button>
   </div>
-  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button><div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v5.1</div>
+  <button class="tab-btn" onclick="showApiKeyDialog()" style="height:28px;font-size:10px;margin-left:8px;border:1px solid var(--line2)">⚙ API Key</button>
+  <div class="topbar-right" style="color:var(--text3)">20MnCr5 / 16MnCr5 · gemini-2.5-flash · v5.1</div>
 </div>
 
 <!-- ══ SKAN ══════════════════════════════════════════════════ -->
@@ -640,7 +641,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
       <div class="baza-section-title">Historia pomiarów</div>
       <div class="hist-table">
         <div class="ht-head">
-          <span>Nr detalu</span><span>R/kąt</span><span>X konstr.</span><span>Korekta</span><span></span>
+          <span>Nr detalu</span><span>R / kąt</span><span>X konstr.</span><span>Korekta</span><span></span>
         </div>
         <div id="hist-body"></div>
       </div>
@@ -674,7 +675,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
       </div>
 
       <div class="median-table">
-        <div class="mt-head" style="grid-template-columns:70px 50px 40px 1fr 1fr 80px 70px">
+        <div class="mt-head" style="grid-template-columns:80px 50px 40px 1fr 1fr 80px 70px">
           <span>R / kąt</span><span>n</span><span>t</span><span>Med. góra</span><span>Med. dół</span><span>Na stronę</span><span>Pewność</span>
         </div>
         <div id="median-body"></div>
@@ -737,15 +738,10 @@ function getZ(R, deg=90) {
 function getNarz(R, minRamie){
   const row = TABLE.reduce((a,b)=>Math.abs(b.R-R)<Math.abs(a.R-R)?b:a);
   const narzedzia = row.narz.split(' / ').map(n=>n.trim());
-  
-  // Jeśli nie podano minimalnej długości ramienia — zwróć pierwsze
   if(!minRamie || isNaN(minRamie)) return narzedzia[0];
-  
-  // Sprawdź czy ramię >= minL narzędzia
   if(minRamie >= row.minL) {
-    return narzedzia[0]; // Pierwsze narzędzie mieści się
+    return narzedzia[0];
   } else {
-    // Ramię za krótkie — zaznacz ostrzeżenie
     return narzedzia[0] + ' ⚠';
   }
 }
@@ -794,7 +790,7 @@ function removeArm(i){
   onCalcChange();
 }
 
-function onCalcChange(){ /* live update może być opcjonalne */ }
+function onCalcChange(){ }
 
 function calculate(){
   const R   = parseFloat(document.getElementById('k-r').value)||0;
@@ -922,7 +918,6 @@ function saveEntry(){
   db.unshift(e);
   saveDB();
   notify(`✓ R${e.R}/${e.deg}° · korekta ${e.kor>=0?'+':''}${e.kor}mm`);
-  // Reset
   ['b-nr','b-r','b-x','b-kor','b-narz'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('b-a').value=90;
   document.getElementById('kor-display').style.display='none';
@@ -957,7 +952,7 @@ function importJSON(input){
   reader.onload = (e) => {
     try {
       const data = JSON.parse(e.target.result);
-      const imported = data.db || data; // obsłuż oba formaty
+      const imported = data.db || data;
       if(!Array.isArray(imported)) throw new Error('Nieprawidłowy format');
       if(confirm(`Wczytać ${imported.length} wpisów? Obecna baza (${db.length} wpisów) zostanie zastąpiona.`)){
         db = imported;
@@ -968,7 +963,7 @@ function importJSON(input){
     } catch(err) {
       alert('Błąd wczytywania: ' + err.message);
     }
-    input.value = ''; // reset
+    input.value = '';
   };
   reader.readAsText(file);
 }
@@ -1014,7 +1009,7 @@ function renderBaza(){
       const n=k.kors.length;
       const conf=n>=3?{c:'c-high',t:'wysoka'}:n>=2?{c:'c-med',t:'średnia'}:n>=1?{c:'c-low',t:'1 pom.'}:{c:'c-none',t:'—'};
       const half=m!=null?(m/2>=0?'+':'')+(m/2).toFixed(2)+'mm':'—';
-      return `<div class="mt-row" style="grid-template-columns:70px 50px 40px 1fr 1fr 80px 70px">
+      return `<div class="mt-row" style="grid-template-columns:80px 50px 40px 1fr 1fr 80px 70px">
         <span class="mt-r">R${k.R}/${k.deg}°</span>
         <span class="mt-n">${n}×</span>
         <span class="mt-n">${k.t}mm</span>
@@ -1036,9 +1031,9 @@ function renderBaza(){
       const sign=e.kor>=0?'+':'';
       return `<div class="ht-row">
         <span class="ht-nr" title="${e.nr}">${e.nr}</span>
-        <span class="ht-r">R${e.R}/${e.deg}°</span>
-        <span style="color:var(--text2);font-size:11px">${e.x!=null?e.x+'mm':'—'}</span>
-        <span class="ht-kor ${cls}">${sign}${e.kor}mm</span>
+        <span class="ht-r">R${e.R} / ${e.deg}°</span>
+        <span style="color:var(--text2);font-size:11px">${e.x!=null?e.x+' mm':'—'}</span>
+        <span class="ht-kor ${cls}">${sign}${e.kor} mm</span>
         <button class="ht-del" onclick="delEntry(${e.id})">×</button>
       </div>`;
     }).join('');
@@ -1080,11 +1075,9 @@ function notify(msg){
   setTimeout(()=>el.classList.remove('show'),2000);
 }
 
-
 // ═══════════════════════════════════════════════════════════
 // GEMINI API KEY
 // ═══════════════════════════════════════════════════════════
-// Klucz API — wpisywany przez użytkownika, zapisywany lokalnie
 function getApiKey(){
   return localStorage.getItem('gemini_api_key')||'';
 }
@@ -1143,7 +1136,6 @@ korekta: liczba mm z dopisku giętarza, null jeśli brak.
 Zawsze zwracaj kompletny JSON.`;
 
   try {
-    // Gemini wymaga: najpierw obraz, potem tekst
     const mt = scanFile.type || 'image/jpeg';
     const parts = [
       {
@@ -1155,7 +1147,6 @@ Zawsze zwracaj kompletny JSON.`;
       { text: prompt }
     ];
 
-    // Sprawdź klucz
     const apiKey = getApiKey();
     if(!apiKey){
       showApiKeyDialog();
@@ -1175,11 +1166,8 @@ Zawsze zwracaj kompletny JSON.`;
     const raw = data.candidates[0].content.parts[0].text.trim();
     console.log('Gemini raw:', raw);
 
-    // Wyciągnij JSON - obsłuż różne formaty odpowiedzi
     let jsonStr = raw;
-    // Usuń markdown fences
     jsonStr = jsonStr.replace(/^```json\s*/m, '').replace(/^```\s*/m, '').replace(/```$/m, '').trim();
-    // Znajdź obiekt JSON { ... }
     const m = jsonStr.match(/\{[\s\S]*\}/);
     if(!m) {
       throw new Error('Brak JSON. Odpowiedź: ' + raw.substring(0,200));
@@ -1192,7 +1180,6 @@ Zawsze zwracaj kompletny JSON.`;
     }
     console.log('Gemini parsed OK:', parsed);
 
-    // Oczyść dane - napraw typowe błędy Gemini
     if(typeof parsed.mat === 'number' || !parsed.mat || parsed.mat === '2') parsed.mat = '20MnCr5';
     if(typeof parsed.t === 'string') parsed.t = parseFloat(parsed.t) || 5;
     if(!parsed.t || parsed.t < 1) parsed.t = 5;
@@ -1239,7 +1226,6 @@ function runScanCalcAuto(d) {
   const R = d.R, deg = d.deg||90, x = d.x_konstr, kor = d.korekta;
   if(!R || !x) return;
 
-  // Znajdź korektę z bazy jeśli brak dopisku
   let korFinal = kor;
   let korSrc = 'dopisek giętarza';
   if(korFinal === null || korFinal === undefined) {
@@ -1354,7 +1340,6 @@ function renderScanResult(d) {
       </div>
     </div>`;
 
-  // Prefill baza
   if(nr) document.getElementById('b-nr').value = nr;
   if(mat) document.getElementById('b-mat').value = mat;
   if(t)   document.getElementById('b-t').value = t;
@@ -1362,7 +1347,6 @@ function renderScanResult(d) {
   if(deg) document.getElementById('b-a').value = deg;
   if(x_konstr) document.getElementById('b-x').value = x_konstr;
   if(korekta !== null && !isNaN(korekta)) document.getElementById('b-kor').value = korekta;
-  // Prefill dół jeśli AI odczytał
   if(d && d.x_dol) { const el=document.getElementById('b-x2'); if(el) el.value=d.x_dol; }
   if(d && d.korekta_dol!==null && d.korekta_dol!==undefined) { const el=document.getElementById('b-kor2'); if(el) el.value=d.korekta_dol; }
 }
@@ -1371,7 +1355,6 @@ function saveScanEntry() {
   const R   = parseFloat(document.getElementById('sf-r').value)||null;
   const kor = parseFloat(document.getElementById('sf-kor').value);
   if(!R || isNaN(kor)) { notify('Uzupełnij R i korektę'); return; }
-  // Przełącz do bazy i zapisz
   switchTab('baza');
   setTimeout(()=>{ checkSaveBtn(); if(!document.getElementById('save-btn').disabled) saveEntry(); }, 100);
 }
@@ -1401,7 +1384,6 @@ sdz.addEventListener('dragover', e=>{ e.preventDefault(); sdz.classList.add('dra
 sdz.addEventListener('dragleave', ()=> sdz.classList.remove('drag'));
 sdz.addEventListener('drop', e=>{ e.preventDefault(); sdz.classList.remove('drag'); if(e.dataTransfer.files[0]) handleScanFile(e.dataTransfer.files[0]); });
 
-
 function showApiKeyDialog(){
   document.getElementById('api-dialog').style.display='flex';
   setTimeout(()=>document.getElementById('api-key-input').focus(),100);
@@ -1415,7 +1397,6 @@ function confirmApiKey(){
   setApiKey(k);
   closeApiDialog();
   notify('✓ Klucz API zapisany');
-  // Spróbuj ponownie skan jeśli był plik
   if(scanFile.b64) analyzeScan();
 }
 
@@ -1443,7 +1424,6 @@ renderRef();
     </div>
   </div>
 </div>
-
 
 <!-- STOPKA -->
 <div style="
